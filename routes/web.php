@@ -21,6 +21,8 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     Route::resource('applications', ApplicationController::class)->except(['show']);
+    Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/{application}/pdf', [ApplicationController::class, 'pdf'])->name('applications.pdf');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');

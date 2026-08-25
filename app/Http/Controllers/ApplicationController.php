@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApplicationController extends Controller
 {
@@ -36,6 +37,18 @@ class ApplicationController extends Controller
     public function create(): View
     {
         return view('applications.create');
+    }
+
+    public function show(Application $application): View
+    {
+        return view('applications.show', compact('application'));
+    }
+
+    public function pdf(Application $application)
+    {
+        return Pdf::loadView('applications.pdf', compact('application'))
+            ->setPaper('a4')
+            ->download('detail-'.$application->code.'.pdf');
     }
 
     public function store(Request $request): RedirectResponse
