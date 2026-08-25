@@ -53,5 +53,33 @@ class DatabaseSeeder extends Seeder
                 'operating_system' => 'Linux', 'description' => 'Contoh data katalog aplikasi daerah.',
             ]);
         }
+
+        $westJavaInstitutions = [
+            'Pemerintah Provinsi Jawa Barat',
+            'Pemerintah Kabupaten Bandung', 'Pemerintah Kabupaten Bandung Barat',
+            'Pemerintah Kabupaten Bekasi', 'Pemerintah Kabupaten Bogor',
+            'Pemerintah Kabupaten Ciamis', 'Pemerintah Kabupaten Cianjur',
+            'Pemerintah Kabupaten Cirebon', 'Pemerintah Kabupaten Garut',
+            'Pemerintah Kabupaten Indramayu', 'Pemerintah Kabupaten Karawang',
+            'Pemerintah Kabupaten Kuningan', 'Pemerintah Kabupaten Majalengka',
+            'Pemerintah Kabupaten Pangandaran', 'Pemerintah Kabupaten Purwakarta',
+            'Pemerintah Kabupaten Subang', 'Pemerintah Kabupaten Sukabumi',
+            'Pemerintah Kabupaten Sumedang', 'Pemerintah Kabupaten Tasikmalaya',
+            'Pemerintah Kota Bandung', 'Pemerintah Kota Banjar',
+            'Pemerintah Kota Bekasi', 'Pemerintah Kota Bogor',
+            'Pemerintah Kota Cimahi', 'Pemerintah Kota Cirebon',
+            'Pemerintah Kota Depok', 'Pemerintah Kota Sukabumi',
+            'Pemerintah Kota Tasikmalaya',
+        ];
+
+        foreach ($westJavaInstitutions as $index => $owner) {
+            Application::updateOrCreate(['code' => 'JABAR-'.str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT)], [
+                'name' => 'Katalog Layanan '.$owner,
+                'owner' => $owner, 'service' => 'Layanan Pemerintahan',
+                'sector' => 'Pemerintahan Daerah', 'status' => 'Aktif', 'year' => 2024,
+                'language' => 'PHP', 'framework' => 'Laravel', 'database' => 'MySQL',
+                'operating_system' => 'Linux', 'description' => 'Data awal katalog layanan pemerintahan Jawa Barat.',
+            ]);
+        }
     }
 }
