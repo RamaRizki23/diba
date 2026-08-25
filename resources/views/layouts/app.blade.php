@@ -44,7 +44,7 @@
         .code { color:var(--teal); font-size:11px; font-weight:700; } .app-name { font-weight:700; margin-top:3px; } .muted { color:var(--muted); }
         .status { display:inline-flex; padding:5px 9px; border-radius:20px; font-size:11px; font-weight:700; background:#e4f5d0; color:#4d761d; } .status.nonaktif { background:#f8e5e1; color:#a8443b; } .status.dalam { background:#fff0d5; color:#9a6618; }
         .actions { display:flex; gap:7px; } .icon-button { border:0; background:#eff5f2; color:var(--teal); border-radius:7px; padding:7px 9px; cursor:pointer; font-size:12px; } .icon-button.delete { color:#a8443b; background:#fff0ee; }
-        .search { display:flex; gap:8px; } .search input { width:270px; }
+        .search { display:flex; gap:8px; } .search input { width:220px; } .search select { width:180px; }
         .form-panel { max-width:980px; } .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 22px; } .full { grid-column:1/-1; }
         label { display:block; font-size:12px; font-weight:700; margin-bottom:7px; } input, select, textarea { width:100%; border:1px solid #d9e4e0; border-radius:8px; background:#fbfdfc; padding:11px 12px; color:var(--ink); font:14px 'DM Sans'; outline:none; } input:focus,select:focus,textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px #dff2ee; } textarea { min-height:100px; resize:vertical; }
         .form-actions { display:flex; justify-content:flex-end; gap:10px; padding-top:22px; margin-top:22px; border-top:1px solid var(--line); }

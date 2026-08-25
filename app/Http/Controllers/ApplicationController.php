@@ -12,7 +12,15 @@ class ApplicationController extends Controller
 {
     public function index(Request $request): View
     {
+        $owners = Application::query()
+            ->whereNotNull('owner')
+            ->where('owner', '<>', '')
+            ->distinct()
+            ->orderBy('owner')
+            ->pluck('owner');
+
         $applications = Application::query()
+            ->when($request->filled('owner'), fn ($query) => $query->where('owner', $request->string('owner')))
             ->when($request->filled('search'), fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%'.$request->search.'%')
                     ->orWhere('code', 'like', '%'.$request->search.'%')
@@ -22,7 +30,7 @@ class ApplicationController extends Controller
             ->paginate(8)
             ->withQueryString();
 
-        return view('applications.index', compact('applications'));
+        return view('applications.index', compact('applications', 'owners'));
     }
 
     public function create(): View
