@@ -6,6 +6,7 @@
     <title>{{ $title ?? 'DIBA Console' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root { --ink:#263238; --muted:#71808a; --line:#dfe4e7; --paper:#f1f3f6; --white:#fff; --teal:#119db4; --lime:#c7ee73; --orange:#ffb454; --red:#df6b5f; --sidebar:#343a40; }
         * { box-sizing:border-box; }
@@ -19,7 +20,7 @@
         .nav-label { padding:23px 9px 10px; color:#aeb6bb; font-size:11px; letter-spacing:1px; text-transform:lowercase; }
         .nav a { display:flex; align-items:flex-start; gap:10px; padding:10px 9px; color:#d5dade; margin-bottom:2px; font-size:13px; line-height:1.3; }
         .nav a:hover,.nav a.active { color:#fff; background:#41484e; }
-        .nav-icon { width:21px; color:#e4e8ea; font-weight:700; text-align:center; font-size:16px; }
+        .nav-icon { width:21px; color:#e4e8ea; font-weight:400; text-align:center; font-size:16px; }
         .sidebar-footer { margin-top:auto; border-top:1px solid #4b5156; padding:15px 9px; color:#aeb6bb; font-size:11px; }
         .user-chip { display:flex; gap:10px; align-items:center; margin-top:10px; color:#fff; font-size:13px; }
         .avatar { width:30px; height:30px; border-radius:50%; background:var(--orange); color:var(--ink); display:grid; place-items:center; font-weight:700; }
@@ -74,8 +75,8 @@
         <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span>Katalog Aplikasi</a>
         <div class="nav-label">menu utama</div>
         <nav class="nav">
-            <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon">▤</span>Daftar Aplikasi</a>
-            <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon">↪</span>Logout</button></form>
+            <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
         </nav>
         <div class="sidebar-footer">Sistem Inventaris Digital<div class="user-chip"><span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span><span>{{ auth()->user()->name ?? 'Administrator' }}</span></div></div>
     </aside>
