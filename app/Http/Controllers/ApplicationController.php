@@ -28,7 +28,7 @@ class ApplicationController extends Controller
                     ->orWhere('owner', 'like', '%'.$request->search.'%');
             }))
             ->latest()
-            ->paginate(8)
+            ->paginate(10)
             ->withQueryString();
 
         return view('applications.index', compact('applications', 'owners'));
