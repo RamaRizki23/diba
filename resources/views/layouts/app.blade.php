@@ -52,6 +52,9 @@
         .tool-button { border:0; border-radius:3px; padding:7px 10px; color:#fff; font:12px 'DM Sans'; cursor:pointer; }
         .tool-button.copy { background:#15a5b6; } .tool-button.pdf { background:#ed5361; } .tool-button.print { background:#f5bd12; color:#27333a; } .tool-button.columns { background:#68747c; }
         .table-tools-right input { width:145px; padding:7px 9px; }
+        .filter-bar { display:flex; justify-content:flex-end; gap:0; padding:11px 0 15px; border-top:1px solid #f0f2f3; }
+        .filter-bar select { width:min(620px, 65%); border-radius:3px 0 0 3px; background:#fff; }
+        .filter-bar .button { border-radius:0 3px 3px 0; padding-left:13px; padding-right:13px; background:#13a3ba; }
         .form-panel { max-width:980px; } .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 22px; } .full { grid-column:1/-1; }
         label { display:block; font-size:12px; font-weight:700; margin-bottom:7px; } input, select, textarea { width:100%; border:1px solid #d9e4e0; border-radius:8px; background:#fbfdfc; padding:11px 12px; color:var(--ink); font:14px 'DM Sans'; outline:none; } input:focus,select:focus,textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px #dff2ee; } textarea { min-height:100px; resize:vertical; }
         .form-actions { display:flex; justify-content:flex-end; gap:10px; padding-top:22px; margin-top:22px; border-top:1px solid var(--line); }
