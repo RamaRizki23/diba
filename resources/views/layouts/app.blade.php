@@ -76,6 +76,7 @@
         <div class="nav-label">menu utama</div>
         <nav class="nav">
             <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>
+            <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>
             <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
         </nav>
         <div class="sidebar-footer">Sistem Inventaris Digital<div class="user-chip"><span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span><span>{{ auth()->user()->name ?? 'Administrator' }}</span></div></div>

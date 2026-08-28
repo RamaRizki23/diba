@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\MasterData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -36,7 +37,7 @@ class ApplicationController extends Controller
 
     public function create(): View
     {
-        return view('applications.create');
+        return view('applications.create', ['masterData' => $this->masterData()]);
     }
 
     public function show(Application $application): View
@@ -51,6 +52,17 @@ class ApplicationController extends Controller
             ->download('detail-'.$application->code.'.pdf');
     }
 
+    public function pdfIndex(Request $request)
+    {
+        $applications = Application::query()
+            ->when($request->filled('owner'), fn ($query) => $query->where('owner', $request->string('owner')))
+            ->latest()->get();
+
+        return Pdf::loadView('applications.list-pdf', compact('applications'))
+            ->setPaper('a4', 'landscape')
+            ->download('daftar-aplikasi.pdf');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         Application::create($this->validated($request));
@@ -60,7 +72,7 @@ class ApplicationController extends Controller
 
     public function edit(Application $application): View
     {
-        return view('applications.edit', compact('application'));
+        return view('applications.edit', ['application' => $application, 'masterData' => $this->masterData()]);
     }
 
     public function update(Request $request, Application $application): RedirectResponse
@@ -98,5 +110,10 @@ class ApplicationController extends Controller
             'integrations' => ['nullable', 'string'],
             'development_cost' => ['nullable', 'numeric', 'min:0'],
         ]);
+    }
+
+    private function masterData(): array
+    {
+        return MasterData::query()->orderBy('name')->get()->groupBy('type')->all();
     }
 }

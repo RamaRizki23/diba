@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Application;
+use App\Models\MasterData;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,6 +17,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $masterData = [
+            'perangkat_daerah' => ['Diskominfo Jabar', 'Dinas Pendidikan'],
+            'layanan' => ['Informasi Publik', 'Pelayanan Administrasi'],
+            'sektor' => ['Pemerintahan', 'Pendidikan', 'Kesehatan'],
+            'bahasa_pemrograman' => ['PHP', 'JavaScript', 'TypeScript', 'Python', 'Java'],
+            'framework' => ['Laravel', 'CodeIgniter', 'Vue.js', 'React', 'Django'],
+            'database' => ['MySQL', 'PostgreSQL', 'SQLite', 'MongoDB'],
+            'operating_system' => ['Linux', 'Windows Server', 'Ubuntu'],
+        ];
+
+        foreach ($masterData as $type => $items) {
+            foreach ($items as $name) {
+                MasterData::updateOrCreate(['type' => $type, 'name' => $name]);
+            }
+        }
+
         User::updateOrCreate(
             ['email' => 'admin@diba.test'],
             ['name' => 'Administrator DIBA', 'password' => 'password'],
