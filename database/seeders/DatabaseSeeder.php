@@ -35,7 +35,11 @@ class DatabaseSeeder extends Seeder
 
         User::updateOrCreate(
             ['email' => 'admin@diba.test'],
-            ['name' => 'Administrator DIBA', 'password' => 'password'],
+            ['name' => 'Administrator DIBA', 'password' => 'password', 'role' => 'admin'],
+        );
+        User::updateOrCreate(
+            ['email' => 'user@diba.test'],
+            ['name' => 'Pengguna DIBA', 'password' => 'password', 'role' => 'user'],
         );
 
         Application::updateOrCreate(['code' => 'DIBA-001'], [

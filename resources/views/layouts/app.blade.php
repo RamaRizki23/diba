@@ -69,14 +69,14 @@
         @media(max-width:900px){ .sidebar{width:205px}.main{padding:0 20px 35px}.main:before{margin-left:-20px;margin-right:-20px}.main:after{left:224px}.site-footer{margin-left:-20px;margin-right:-20px}.stat-grid{grid-template-columns:repeat(2,1fr)} } @media(max-width:650px){ .shell{display:block}.sidebar{width:100%; padding:0 8px}.brand{padding-bottom:12px}.nav{display:flex; overflow:auto; gap:4px}.nav-label,.sidebar-footer{display:none}.nav a{white-space:nowrap}.main{padding:0 15px 25px}.main:before{margin-left:-15px;margin-right:-15px}.main:after{left:18px;top:20px}.topbar{align-items:flex-start; flex-direction:column}.top-actions{width:100%}.search,.search input,.search select{width:100%}.search{flex-wrap:wrap}.table-tools{align-items:flex-start;flex-direction:column}.table-tools-right{width:100%}.table-tools-right input{flex:1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stat-grid{gap:9px}.stat{padding:15px}.stat-value{font-size:24px}.pagination-bar{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}.site-footer{margin-left:-15px;margin-right:-15px;padding-left:15px;padding-right:15px} }
     </style>
 </head>
-<body>
+<body class="{{ auth()->user()?->role === 'admin' ? 'admin-role' : 'user-role' }}">
 <div class="shell">
     <aside class="sidebar">
         <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span>Katalog Aplikasi</a>
         <div class="nav-label">menu utama</div>
         <nav class="nav">
             <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>
-            <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>
+            @if(auth()->user()?->role === 'admin')<a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>@endif
             <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
         </nav>
         <div class="sidebar-footer">Sistem Inventaris Digital<div class="user-chip"><span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span><span>{{ auth()->user()->name ?? 'Administrator' }}</span></div></div>
