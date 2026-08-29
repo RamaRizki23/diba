@@ -26,7 +26,11 @@
         .avatar { width:30px; height:30px; border-radius:50%; background:var(--orange); color:var(--ink); display:grid; place-items:center; font-weight:700; }
         .main { flex:1; min-width:0; padding:0 28px 45px; }
         .main:before { content:''; display:block; height:64px; margin:0 -28px 26px; background:#fff; border-bottom:1px solid var(--line); }
-        .main:after { content:'☰'; position:absolute; top:20px; left:244px; color:#77838a; font-size:18px; }
+        .main:after { display:none; }
+        .menu-toggle { position:absolute; top:15px; left:242px; z-index:5; width:34px; height:34px; display:grid; place-items:center; border:0; border-radius:5px; background:#fff; color:#77838a; font-size:18px; cursor:pointer; }
+        .menu-toggle:hover { color:var(--teal); background:#eef6f3; }
+        .shell.sidebar-collapsed .sidebar { width:0; padding-left:0; padding-right:0; overflow:hidden; }
+        .shell.sidebar-collapsed .menu-toggle { left:18px; }
         .topbar { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-bottom:24px; }
         .eyebrow { color:var(--teal); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; margin-bottom:7px; }
         .page-title { font-size:29px; letter-spacing:-.5px; }
@@ -66,11 +70,12 @@
         .pagination .current { background:#087cf0; border-color:#087cf0; color:#fff; }
         .pagination .disabled { color:#9ba6ad; background:#fafafa; }
         .site-footer { margin:20px -28px -45px; padding:24px 28px; border-top:1px solid var(--line); background:#fff; color:#778895; font-size:14px; font-weight:700; }
-        @media(max-width:900px){ .sidebar{width:205px}.main{padding:0 20px 35px}.main:before{margin-left:-20px;margin-right:-20px}.main:after{left:224px}.site-footer{margin-left:-20px;margin-right:-20px}.stat-grid{grid-template-columns:repeat(2,1fr)} } @media(max-width:650px){ .shell{display:block}.sidebar{width:100%; padding:0 8px}.brand{padding-bottom:12px}.nav{display:flex; overflow:auto; gap:4px}.nav-label,.sidebar-footer{display:none}.nav a{white-space:nowrap}.main{padding:0 15px 25px}.main:before{margin-left:-15px;margin-right:-15px}.main:after{left:18px;top:20px}.topbar{align-items:flex-start; flex-direction:column}.top-actions{width:100%}.search,.search input,.search select{width:100%}.search{flex-wrap:wrap}.table-tools{align-items:flex-start;flex-direction:column}.table-tools-right{width:100%}.table-tools-right input{flex:1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stat-grid{gap:9px}.stat{padding:15px}.stat-value{font-size:24px}.pagination-bar{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}.site-footer{margin-left:-15px;margin-right:-15px;padding-left:15px;padding-right:15px} }
+        @media(max-width:900px){ .sidebar{width:205px}.main{padding:0 20px 35px}.main:before{margin-left:-20px;margin-right:-20px}.menu-toggle{left:222px}.shell.sidebar-collapsed .menu-toggle{left:18px}.site-footer{margin-left:-20px;margin-right:-20px}.stat-grid{grid-template-columns:repeat(2,1fr)} } @media(max-width:650px){ .shell{display:block}.sidebar{width:100%; padding:0 8px}.shell.sidebar-collapsed .sidebar{width:0;padding:0}.brand{padding-bottom:12px}.nav{display:flex; overflow:auto; gap:4px}.nav-label,.sidebar-footer{display:none}.nav a{white-space:nowrap}.main{padding:0 15px 25px}.main:before{margin-left:-15px;margin-right:-15px}.menu-toggle{left:18px}.topbar{align-items:flex-start; flex-direction:column}.top-actions{width:100%}.search,.search input,.search select{width:100%}.search{flex-wrap:wrap}.table-tools{align-items:flex-start;flex-direction:column}.table-tools-right{width:100%}.table-tools-right input{flex:1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stat-grid{gap:9px}.stat{padding:15px}.stat-value{font-size:24px}.pagination-bar{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}.site-footer{margin-left:-15px;margin-right:-15px;padding-left:15px;padding-right:15px} }
     </style>
 </head>
 <body class="{{ auth()->user()?->role === 'admin' ? 'admin-role' : 'user-role' }}">
 <div class="shell">
+    <button class="menu-toggle" type="button" aria-label="Buka atau tutup menu" aria-expanded="true"><i class="bi bi-list"></i></button>
     <aside class="sidebar">
         <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span>Katalog Aplikasi</a>
         <div class="nav-label">menu utama</div>
@@ -85,5 +90,16 @@
         @yield('content')
     </main>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const shell = document.querySelector('.shell');
+    const toggle = document.querySelector('.menu-toggle');
+    toggle.addEventListener('click', function () {
+        const collapsed = shell.classList.toggle('sidebar-collapsed');
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        toggle.querySelector('i').className = collapsed ? 'bi bi-layout-sidebar' : 'bi bi-list';
+    });
+});
+</script>
 </body>
 </html>
