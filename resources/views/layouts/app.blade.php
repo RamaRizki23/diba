@@ -80,11 +80,21 @@
         <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span>Katalog Aplikasi</a>
         <div class="nav-label">menu utama</div>
         <nav class="nav">
-            <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>
-            @if(auth()->user()?->role === 'admin')<a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>@endif
-            <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
+            @auth<a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>@endauth
+            <a class="{{ request()->routeIs('dashboard') && request('scope', 'provinsi') === 'provinsi' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'provinsi']) }}"><span class="nav-icon"><i class="bi bi-bar-chart-fill"></i></span>Dashboard Provinsi</a>
+            <a class="{{ request()->routeIs('dashboard') && request('scope') === 'kabupaten-kota' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'kabupaten-kota']) }}"><span class="nav-icon"><i class="bi bi-pie-chart-fill"></i></span>Dashboard Kabupaten/Kota</a>
+            @auth
+                @if(auth()->user()?->role === 'admin')
+                    <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
+            @endauth
         </nav>
-        <div class="sidebar-footer">Sistem Inventaris Digital<div class="user-chip"><span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span><span>{{ auth()->user()->name ?? 'Administrator' }}</span></div></div>
+        <div class="sidebar-footer">Sistem Inventaris Digital
+            @auth
+                <div class="user-chip"><span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span><span>{{ auth()->user()->name ?? 'Administrator' }}</span></div>
+            @endauth
+        </div>
     </aside>
     <main class="main">
         @yield('content')

@@ -4,9 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect()->route('dashboard');
 });
 
 Route::get('/login', [AuthController::class, 'showLogin'])
@@ -15,12 +16,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.process');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 Route::middleware('auth')->group(function () {
-
-    Route::get('/dashboard', function () {
-        return redirect()->route('applications.index');
-    })->name('dashboard');
-
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::get('/applications/pdf', [ApplicationController::class, 'pdfIndex'])->name('applications.pdf.index');
     Route::middleware('admin')->group(function () {
