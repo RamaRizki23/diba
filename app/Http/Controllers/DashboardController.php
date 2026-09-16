@@ -20,6 +20,17 @@ class DashboardController extends Controller
             }))
             ->get();
 
+        $filters = [
+            'owner' => $request->string('owner')->toString(),
+            'service' => $request->string('service')->toString(),
+            'sector' => $request->string('sector')->toString(),
+        ];
+
+        $filteredApplications = $applications
+            ->when($filters['owner'] !== '', fn ($collection) => $collection->where('owner', $filters['owner']))
+            ->when($filters['service'] !== '', fn ($collection) => $collection->where('service', $filters['service']))
+            ->when($filters['sector'] !== '', fn ($collection) => $collection->where('sector', $filters['sector']));
+
         $countBy = fn (string $field) => $applications
             ->filter(fn ($application) => filled($application->{$field}))
             ->groupBy($field)
@@ -29,6 +40,11 @@ class DashboardController extends Controller
         return view('dashboard', [
             'scope' => $scope,
             'applications' => $applications,
+            'filteredApplications' => $filteredApplications,
+            'owners' => $applications->pluck('owner')->filter()->unique()->sort()->values(),
+            'services' => $applications->pluck('service')->filter()->unique()->sort()->values(),
+            'sectors' => $applications->pluck('sector')->filter()->unique()->sort()->values(),
+            'filters' => $filters,
             'stats' => [
                 'total' => $applications->count(),
                 'pse' => $applications->where('pse_status', 'Sudah')->count(),

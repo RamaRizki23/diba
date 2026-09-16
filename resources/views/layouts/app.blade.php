@@ -13,27 +13,42 @@
         body { margin:0; color:var(--ink); background:var(--paper); font-family:'DM Sans',sans-serif; }
         h1,h2,h3 { font-family:'Space Grotesk',sans-serif; margin:0; }
         a { color:inherit; text-decoration:none; }
-        .shell { display:flex; min-height:100vh; }
-        .sidebar { width:224px; padding:0 8px; background:var(--sidebar); color:#dce1e4; display:flex; flex-direction:column; }
-        .brand { display:flex; gap:10px; align-items:center; padding:18px 10px; color:#fff; font-family:'Space Grotesk'; font-size:19px; font-weight:500; border-bottom:1px solid #4b5156; }
+        .shell { display:flex; align-items:stretch; min-height:100vh; }
+        .sidebar { order:1; flex:0 0 250px; width:250px; padding:0 8px; background:var(--sidebar); color:#dce1e4; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+        .brand { display:flex; gap:10px; align-items:center; padding:18px 10px; color:#fff; font-family:'Space Grotesk'; font-size:24px; font-weight:500; white-space:nowrap; border-bottom:1px solid #4b5156; margin:0; }
         .brand-mark { width:31px; height:31px; border-radius:50%; background:#e9ecef; color:#59636b; display:grid; place-items:center; font-family:Arial,sans-serif; font-weight:700; }
-        .nav-label { padding:23px 9px 10px; color:#aeb6bb; font-size:11px; letter-spacing:1px; text-transform:lowercase; }
-        .nav a { display:flex; align-items:flex-start; gap:10px; padding:10px 9px; color:#d5dade; margin-bottom:2px; font-size:13px; line-height:1.3; }
+        .role-label { padding:22px 12px 8px; color:#d5dade; font-size:17px; font-weight:600; text-transform:lowercase; }
+        .nav-label { padding:23px 9px 10px; color:#aeb6bb; font-size:13px; letter-spacing:1px; text-transform:lowercase; }
+        .nav { display:flex; flex-direction:column; }
+        .nav a { display:flex; align-items:flex-start; gap:10px; padding:10px 9px; color:#d5dade; margin-bottom:2px; font-size:18px; line-height:1.3; }
         .nav a:hover,.nav a.active { color:#fff; background:#41484e; }
-        .nav-icon { width:21px; color:#e4e8ea; font-weight:400; text-align:center; font-size:16px; }
+        .nav .login-link { margin-top:12px; background:#1fa0b5; color:#fff; border-radius:8px; font-weight:600; }
+        .nav .login-link:hover { background:#168aa1; color:#fff; }
+        .nav-icon { width:21px; color:#e4e8ea; font-weight:400; text-align:center; font-size:18px; }
+        .logout-button { font-size:18px !important; }
+        .logout-button .nav-icon { font-size:21px; }
         .sidebar-footer { margin-top:auto; border-top:1px solid #4b5156; padding:15px 9px; color:#aeb6bb; font-size:11px; }
+        .nav-section { margin-top:14px; }
+        .nav-section-label { padding:10px 9px 6px; font-size:11px; color:#aeb6bb; letter-spacing:0.1em; text-transform:uppercase; }
         .user-chip { display:flex; gap:10px; align-items:center; margin-top:10px; color:#fff; font-size:13px; }
         .avatar { width:30px; height:30px; border-radius:50%; background:var(--orange); color:var(--ink); display:grid; place-items:center; font-weight:700; }
-        .main { flex:1; min-width:0; padding:0 28px 45px; }
-        .main:before { content:''; display:block; height:64px; margin:0 -28px 26px; background:#fff; border-bottom:1px solid var(--line); }
+        .main { order:2; flex:1 1 auto; min-width:0; padding:0 28px 45px; background:#f3f5f6; }
+        .main:before { content:''; display:none; }
         .main:after { display:none; }
-        .menu-toggle { position:absolute; top:15px; left:242px; z-index:5; width:34px; height:34px; display:grid; place-items:center; border:0; border-radius:5px; background:#fff; color:#77838a; font-size:18px; cursor:pointer; }
+        .main > * { max-width:100%; }
+        .menu-toggle { position:absolute; top:15px; left:268px; z-index:5; width:34px; height:34px; display:grid; place-items:center; border:0; border-radius:5px; background:#fff; color:#77838a; font-size:18px; cursor:pointer; }
         .menu-toggle:hover { color:var(--teal); background:#eef6f3; }
-        .shell.sidebar-collapsed .sidebar { width:0; padding-left:0; padding-right:0; overflow:hidden; }
-        .shell.sidebar-collapsed .menu-toggle { left:18px; }
-        .topbar { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-bottom:24px; }
-        .eyebrow { color:var(--teal); font-size:11px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; margin-bottom:7px; }
-        .page-title { font-size:29px; letter-spacing:-.5px; }
+        .shell.sidebar-collapsed .sidebar { flex-basis:86px; width:86px; padding-left:4px; padding-right:4px; }
+        .shell.sidebar-collapsed .brand { justify-content:center; padding-left:4px; padding-right:4px; }
+        .shell.sidebar-collapsed .brand-text,.shell.sidebar-collapsed .nav-label,.shell.sidebar-collapsed .nav-text,.shell.sidebar-collapsed .sidebar-footer { display:none; }
+        .shell.sidebar-collapsed .role-label { display:none; }
+        .shell.sidebar-collapsed .nav a { justify-content:center; padding-left:8px; padding-right:8px; }
+        .shell.sidebar-collapsed .nav-icon { width:auto; font-size:20px; }
+        .shell.sidebar-collapsed .nav .login-link { justify-content:center; }
+        .shell.sidebar-collapsed .menu-toggle { left:104px; }
+        .topbar { display:flex; justify-content:space-between; gap:20px; align-items:center; margin-top:82px; margin-bottom:24px; }
+        .eyebrow { color:var(--teal); font-size:14px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase; margin-bottom:7px; }
+        .page-title { font-size:36px; letter-spacing:-.5px; }
         .top-actions { display:flex; align-items:center; gap:14px; }
         .button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:4px; padding:10px 14px; background:var(--teal); color:#fff; font:600 13px 'DM Sans'; cursor:pointer; }
         .button:hover { background:#06675f; }
@@ -70,25 +85,40 @@
         .pagination .current { background:#087cf0; border-color:#087cf0; color:#fff; }
         .pagination .disabled { color:#9ba6ad; background:#fafafa; }
         .site-footer { margin:20px -28px -45px; padding:24px 28px; border-top:1px solid var(--line); background:#fff; color:#778895; font-size:14px; font-weight:700; }
-        @media(max-width:900px){ .sidebar{width:205px}.main{padding:0 20px 35px}.main:before{margin-left:-20px;margin-right:-20px}.menu-toggle{left:222px}.shell.sidebar-collapsed .menu-toggle{left:18px}.site-footer{margin-left:-20px;margin-right:-20px}.stat-grid{grid-template-columns:repeat(2,1fr)} } @media(max-width:650px){ .shell{display:block}.sidebar{width:100%; padding:0 8px}.shell.sidebar-collapsed .sidebar{width:0;padding:0}.brand{padding-bottom:12px}.nav{display:flex; overflow:auto; gap:4px}.nav-label,.sidebar-footer{display:none}.nav a{white-space:nowrap}.main{padding:0 15px 25px}.main:before{margin-left:-15px;margin-right:-15px}.menu-toggle{left:18px}.topbar{align-items:flex-start; flex-direction:column}.top-actions{width:100%}.search,.search input,.search select{width:100%}.search{flex-wrap:wrap}.table-tools{align-items:flex-start;flex-direction:column}.table-tools-right{width:100%}.table-tools-right input{flex:1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stat-grid{gap:9px}.stat{padding:15px}.stat-value{font-size:24px}.pagination-bar{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}.site-footer{margin-left:-15px;margin-right:-15px;padding-left:15px;padding-right:15px} }
+        @media(max-width:900px){ .sidebar{width:250px;flex-basis:250px}.main{padding:0 20px 35px}.main:before{margin-left:-20px;margin-right:-20px}.menu-toggle{left:268px}.shell.sidebar-collapsed .menu-toggle{left:104px}.site-footer{margin-left:-20px;margin-right:-20px}.stat-grid{grid-template-columns:repeat(2,1fr)} } @media(max-width:650px){ .shell{display:block}.sidebar{width:100%; padding:0 8px}.shell.sidebar-collapsed .sidebar{width:86px;padding:0 4px}.brand{padding-bottom:12px}.nav{display:flex; overflow:auto; gap:4px}.nav-label,.sidebar-footer{display:none}.nav a{white-space:nowrap}.main{padding:0 15px 25px}.main:before{margin-left:-15px;margin-right:-15px}.menu-toggle{left:18px}.topbar{align-items:flex-start; flex-direction:column}.top-actions{width:100%}.search,.search input,.search select{width:100%}.search{flex-wrap:wrap}.table-tools{align-items:flex-start;flex-direction:column}.table-tools-right{width:100%}.table-tools-right input{flex:1}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stat-grid{gap:9px}.stat{padding:15px}.stat-value{font-size:24px}.pagination-bar{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}.site-footer{margin-left:-15px;margin-right:-15px;padding-left:15px;padding-right:15px} }
+    </style>
+    <style>
+        body { font-size:20px; }
+        .button,.tool-button { font-size:17px; }
+        label,.table-tools,.filter-bar,.pagination-bar,.sidebar-footer { font-size:16px; }
+        input,select,textarea { font-size:18px; }
+        table { font-size:17px; }
+        th { font-size:15px; }
+        .code,.status,.icon-button { font-size:15px; }
     </style>
 </head>
 <body class="{{ auth()->user()?->role === 'admin' ? 'admin-role' : 'user-role' }}">
 <div class="shell">
     <button class="menu-toggle" type="button" aria-label="Buka atau tutup menu" aria-expanded="true"><i class="bi bi-list"></i></button>
     <aside class="sidebar">
-        <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span>Katalog Aplikasi</a>
+        <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">A</span><span class="brand-text">Katalog Aplikasi</span></a>
+        @auth
+            <div class="role-label">{{ auth()->user()->role === 'admin' ? 'admin' : 'viewer' }}</div>
+        @endauth
         <div class="nav-label">menu utama</div>
         <nav class="nav">
-            @auth<a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>Daftar Aplikasi</a>@endauth
-            <a class="{{ request()->routeIs('dashboard') && request('scope', 'provinsi') === 'provinsi' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'provinsi']) }}"><span class="nav-icon"><i class="bi bi-bar-chart-fill"></i></span>Dashboard Provinsi</a>
-            <a class="{{ request()->routeIs('dashboard') && request('scope') === 'kabupaten-kota' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'kabupaten-kota']) }}"><span class="nav-icon"><i class="bi bi-pie-chart-fill"></i></span>Dashboard Kabupaten/Kota</a>
+            <a class="{{ request()->routeIs('dashboard') && request('scope', 'provinsi') === 'provinsi' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'provinsi']) }}"><span class="nav-icon"><i class="bi bi-bar-chart-fill"></i></span><span class="nav-text">Dashboard Provinsi</span></a>
+            <a class="{{ request()->routeIs('dashboard') && request('scope') === 'kabupaten-kota' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'kabupaten-kota']) }}"><span class="nav-icon"><i class="bi bi-pie-chart-fill"></i></span><span class="nav-text">Dashboard Kabupaten/Kota</span></a>
             @auth
+                <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span><span class="nav-text">Daftar Aplikasi</span></a>
                 @if(auth()->user()?->role === 'admin')
-                    <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span>Master Data</a>
+                    <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span><span class="nav-text">Master Data</span></a>
                 @endif
-                <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>Logout</button></form>
+                <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button class="logout-button" type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span><span class="nav-text">Logout</span></button></form>
             @endauth
+            @guest
+                <a class="login-link" href="{{ route('login') }}"><span class="nav-icon"><i class="bi bi-box-arrow-in-right"></i></span><span class="nav-text">Login</span></a>
+            @endguest
         </nav>
         <div class="sidebar-footer">Sistem Inventaris Digital
             @auth
