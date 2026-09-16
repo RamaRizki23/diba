@@ -19,6 +19,8 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/password', [AuthController::class, 'showChangePassword'])->name('password.edit');
+    Route::put('/password', [AuthController::class, 'changePassword'])->name('password.update');
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::get('/applications/pdf', [ApplicationController::class, 'pdfIndex'])->name('applications.pdf.index');
     Route::middleware('admin')->group(function () {

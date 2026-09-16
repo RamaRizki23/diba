@@ -96,6 +96,19 @@
         th { font-size:15px; }
         .code,.status,.icon-button { font-size:15px; }
     </style>
+    <style>
+        .main h1,.main .page-title { font-size:36px !important; }
+        .main h2,.main .panel-head h2 { font-size:24px !important; }
+        .main h3 { font-size:22px !important; }
+        .main p,.main .muted,.main .eyebrow,.main .alert,.main .pagination-bar { font-size:17px !important; }
+        .main label,.main .detail-row>label { font-size:17px !important; }
+        .main input,.main select,.main textarea { font-size:18px !important; }
+        .main button,.main .button,.main .tool-button,.main .icon-button { font-size:18px !important; }
+        .main table,.main table td,.main .dashboard-table td { font-size:17px !important; }
+        .main table th,.main .dashboard-table th { font-size:16px !important; }
+        .main .stat-label,.main .role-label { font-size:17px !important; }
+        .main .stat-value { font-size:30px !important; }
+    </style>
 </head>
 <body class="{{ auth()->user()?->role === 'admin' ? 'admin-role' : 'user-role' }}">
 <div class="shell">
@@ -114,6 +127,7 @@
                 @if(auth()->user()?->role === 'admin')
                     <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span><span class="nav-text">Master Data</span></a>
                 @endif
+                <a class="{{ request()->routeIs('password.*') ? 'active' : '' }}" href="{{ route('password.edit') }}"><span class="nav-icon"><i class="bi bi-key-fill"></i></span><span class="nav-text">Ganti Password</span></a>
                 <form method="POST" action="{{ route('logout') }}" style="margin:0">@csrf<button class="logout-button" type="submit" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 9px;border:0;background:none;color:#d5dade;font:13px 'DM Sans';text-align:left;cursor:pointer"><span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span><span class="nav-text">Logout</span></button></form>
             @endauth
             @guest
