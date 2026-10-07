@@ -28,8 +28,15 @@
         .logout-button { font-size:18px !important; }
         .logout-button .nav-icon { font-size:21px; }
         .sidebar-footer { margin-top:auto; border-top:1px solid #4b5156; padding:15px 9px; color:#aeb6bb; font-size:11px; }
-        .nav-section { margin-top:14px; }
-        .nav-section-label { padding:10px 9px 6px; font-size:11px; color:#aeb6bb; letter-spacing:0.1em; text-transform:uppercase; }
+        .nav-group { margin-bottom:2px; }
+        .nav-group-toggle { width:100%; display:flex; align-items:flex-start; gap:10px; padding:10px 9px; border:0; margin:0; background:transparent; color:#d5dade; text-align:left; font:18px/1.3 'DM Sans',sans-serif; cursor:pointer; }
+        .nav-group-toggle:hover,.nav-group.open>.nav-group-toggle { color:#fff; background:#41484e; }
+        .nav-group-toggle .nav-chevron { margin-left:auto; padding:3px 2px 0 8px; font-size:12px; transition:transform .18s ease; }
+        .nav-group.open .nav-chevron { transform:rotate(180deg); }
+        .nav-submenu { display:grid; gap:2px; margin:2px 0 4px 19px; padding-left:7px; border-left:1px solid #56616a; }
+        .nav-submenu a { padding:8px 8px; font-size:16px; }
+        .nav-submenu .nav-icon { font-size:15px; }
+        .nav-group:not(.open) .nav-submenu { display:none; }
         .user-chip { display:flex; gap:10px; align-items:center; margin-top:10px; color:#fff; font-size:13px; }
         .avatar { width:30px; height:30px; border-radius:50%; background:var(--orange); color:var(--ink); display:grid; place-items:center; font-weight:700; }
         .main { order:2; flex:1 1 auto; min-width:0; padding:0 28px 45px; background:#f3f5f6; }
@@ -43,6 +50,10 @@
         .shell.sidebar-collapsed .brand-text,.shell.sidebar-collapsed .nav-label,.shell.sidebar-collapsed .nav-text,.shell.sidebar-collapsed .sidebar-footer { display:none; }
         .shell.sidebar-collapsed .role-label { display:none; }
         .shell.sidebar-collapsed .nav a { justify-content:center; padding-left:8px; padding-right:8px; }
+        .shell.sidebar-collapsed .nav-group-toggle { justify-content:center; padding-left:8px; padding-right:8px; }
+        .shell.sidebar-collapsed .nav-group-toggle .nav-chevron { display:none; }
+        .shell.sidebar-collapsed .nav-submenu { margin-left:0; padding-left:0; border-left:0; }
+        .shell.sidebar-collapsed .nav-submenu a { justify-content:center; padding-left:8px; padding-right:8px; }
         .shell.sidebar-collapsed .nav-icon { width:auto; font-size:20px; }
         .shell.sidebar-collapsed .nav .login-link { justify-content:center; }
         .shell.sidebar-collapsed .menu-toggle { left:104px; }
@@ -124,6 +135,15 @@
             <a class="{{ request()->routeIs('dashboard') && request('scope') === 'kabupaten-kota' ? 'active' : '' }}" href="{{ route('dashboard', ['scope' => 'kabupaten-kota']) }}"><span class="nav-icon"><i class="bi bi-pie-chart-fill"></i></span><span class="nav-text">Dashboard Kabupaten/Kota</span></a>
             @auth
                 <a class="{{ request()->routeIs('applications.*') ? 'active' : '' }}" href="{{ route('applications.index') }}"><span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span><span class="nav-text">Daftar Aplikasi</span></a>
+                <div class="nav-group {{ request()->routeIs('security.*') ? 'open' : '' }}">
+                    <button class="nav-group-toggle" type="button" aria-expanded="{{ request()->routeIs('security.*') ? 'true' : 'false' }}" aria-controls="security-submenu">
+                        <span class="nav-icon"><i class="bi bi-shield-lock-fill"></i></span><span class="nav-text">Keamanan Aplikasi</span><i class="bi bi-chevron-down nav-chevron"></i>
+                    </button>
+                    <div class="nav-submenu" id="security-submenu">
+                        <a class="{{ request()->routeIs('security.dashboard') ? 'active' : '' }}" href="{{ route('security.dashboard') }}"><span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span class="nav-text">Dashboard Keamanan</span></a>
+                        <a class="{{ request()->routeIs('security.findings.*') ? 'active' : '' }}" href="{{ route('security.findings.index') }}"><span class="nav-icon"><i class="bi bi-shield-exclamation"></i></span><span class="nav-text">Temuan Keamanan</span></a>
+                    </div>
+                </div>
                 @if(auth()->user()?->role === 'admin')
                     <a class="{{ request()->routeIs('master-data.*') ? 'active' : '' }}" href="{{ route('master-data.index') }}"><span class="nav-icon"><i class="bi bi-database-fill-gear"></i></span><span class="nav-text">Master Data</span></a>
                 @endif
@@ -152,6 +172,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const collapsed = shell.classList.toggle('sidebar-collapsed');
         toggle.setAttribute('aria-expanded', String(!collapsed));
         toggle.querySelector('i').className = collapsed ? 'bi bi-layout-sidebar' : 'bi bi-list';
+    });
+    document.querySelectorAll('.nav-group-toggle').forEach(function (groupToggle) {
+        groupToggle.addEventListener('click', function () {
+            const group = this.closest('.nav-group');
+            const isOpen = group.classList.toggle('open');
+            this.setAttribute('aria-expanded', String(isOpen));
+        });
     });
 });
 </script>

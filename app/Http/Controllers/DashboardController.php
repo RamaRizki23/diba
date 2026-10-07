@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -24,12 +25,30 @@ class DashboardController extends Controller
             'owner' => $request->string('owner')->toString(),
             'service' => $request->string('service')->toString(),
             'sector' => $request->string('sector')->toString(),
+            'search' => $request->string('search')->toString(),
         ];
 
         $filteredApplications = $applications
             ->when($filters['owner'] !== '', fn ($collection) => $collection->where('owner', $filters['owner']))
             ->when($filters['service'] !== '', fn ($collection) => $collection->where('service', $filters['service']))
-            ->when($filters['sector'] !== '', fn ($collection) => $collection->where('sector', $filters['sector']));
+            ->when($filters['sector'] !== '', fn ($collection) => $collection->where('sector', $filters['sector']))
+            ->when($filters['search'] !== '', function ($collection) use ($filters) {
+                $searchableFields = ['code', 'name', 'url', 'owner', 'pse_badge', 'service', 'sector', 'language', 'framework', 'database'];
+                $search = mb_strtolower($filters['search']);
+
+                return $collection->filter(fn ($application) => collect($searchableFields)
+                    ->contains(fn ($field) => str_contains(mb_strtolower((string) $application->{$field}), $search)));
+            });
+
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $paginatedApplications = new LengthAwarePaginator(
+            $filteredApplications->forPage($currentPage, $perPage)->values(),
+            $filteredApplications->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         $countBy = fn (string $field) => $applications
             ->filter(fn ($application) => filled($application->{$field}))
@@ -41,6 +60,7 @@ class DashboardController extends Controller
             'scope' => $scope,
             'applications' => $applications,
             'filteredApplications' => $filteredApplications,
+            'paginatedApplications' => $paginatedApplications,
             'owners' => $applications->pluck('owner')->filter()->unique()->sort()->values(),
             'services' => $applications->pluck('service')->filter()->unique()->sort()->values(),
             'sectors' => $applications->pluck('sector')->filter()->unique()->sort()->values(),

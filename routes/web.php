@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SecurityFindingController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -23,6 +24,18 @@ Route::middleware('auth')->group(function () {
     Route::put('/password', [AuthController::class, 'changePassword'])->name('password.update');
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::get('/applications/pdf', [ApplicationController::class, 'pdfIndex'])->name('applications.pdf.index');
+    Route::prefix('security')->name('security.')->group(function () {
+        Route::get('/dashboard', [SecurityFindingController::class, 'dashboard'])->name('dashboard');
+        Route::get('/findings', [SecurityFindingController::class, 'index'])->name('findings.index');
+        Route::get('/findings/export', [SecurityFindingController::class, 'export'])->name('findings.export');
+        Route::get('/findings/create', [SecurityFindingController::class, 'create'])->name('findings.create');
+        Route::post('/findings', [SecurityFindingController::class, 'store'])->name('findings.store');
+        Route::get('/findings/{finding}/memo', [SecurityFindingController::class, 'memo'])->name('findings.memo');
+        Route::get('/findings/{finding}/evidence/{evidence}', [SecurityFindingController::class, 'downloadEvidence'])->name('findings.evidence');
+        Route::post('/findings/{finding}/follow-up', [SecurityFindingController::class, 'followUp'])->name('findings.follow-up');
+        Route::patch('/findings/{finding}/status', [SecurityFindingController::class, 'updateStatus'])->name('findings.status');
+        Route::get('/findings/{finding}', [SecurityFindingController::class, 'show'])->name('findings.show');
+    });
     Route::middleware('admin')->group(function () {
         Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');
         Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');

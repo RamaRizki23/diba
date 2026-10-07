@@ -102,5 +102,7 @@ class DatabaseSeeder extends Seeder
                 'operating_system' => 'Linux', 'description' => 'Data awal katalog layanan pemerintahan Jawa Barat.',
             ]);
         }
+
+        $this->call(SecurityFindingSeeder::class);
     }
 }

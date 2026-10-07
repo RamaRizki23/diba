@@ -70,13 +70,14 @@
 <style>
 .dashboard-applications{margin-top:18px;background:#fff;border:1px solid #dfe4e7;min-width:0}
 .dashboard-applications h2{padding:16px 20px;border-bottom:1px solid #e7ebed;font:500 19px 'DM Sans'}
-.dashboard-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:14px;padding:20px;border-bottom:1px solid #edf0f1}
+.dashboard-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(170px,1.2fr) auto auto;gap:14px;padding:20px;border-bottom:1px solid #edf0f1}
 .dashboard-filter label{display:block;margin-bottom:7px;font-size:12px;font-weight:700}
-.dashboard-filter select{border-radius:4px;background:#fff}
+.dashboard-filter select,.dashboard-filter input{border-radius:4px;background:#fff}
+.dashboard-filter-submit{align-self:end}
+.dashboard-filter-submit .button{white-space:nowrap}
 .dashboard-filter-reset{align-self:end}
 .dashboard-filter-reset .button{background:#6c7780;white-space:nowrap}
 .dashboard-table-tools{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 20px 12px;color:#44545e;font-size:13px}
-.dashboard-table-tools input{width:175px;padding:8px 10px;border-radius:4px}
 .dashboard-table-wrap{overflow-x:auto;padding:0 20px 20px}
 .dashboard-table{width:100%;min-width:980px;border-collapse:collapse;font-size:13px}
 .dashboard-table th{padding:11px 9px;background:#f7f9fa;color:#263238;text-align:left;font-size:12px;border:1px solid #dfe4e7}
@@ -84,7 +85,7 @@
 .dashboard-table tbody tr:nth-child(odd){background:#f7f7f7}
 .dashboard-table a{color:#087cf0;word-break:break-word}
 .dashboard-table .app-name{font-weight:500;min-width:130px}
-@media(max-width:700px){.dashboard-filters{grid-template-columns:1fr}.dashboard-table-tools{align-items:flex-start;flex-direction:column}.dashboard-table-tools input{width:100%}}
+@media(max-width:700px){.dashboard-filters{grid-template-columns:1fr}.dashboard-table-tools{align-items:flex-start;flex-direction:column}}
 </style>
 <section class="dashboard-applications">
     <h2>Daftar Aplikasi Perangkat Daerah</h2>
@@ -94,24 +95,19 @@
         <div class="dashboard-filter"><label for="dashboard-owner">Filter Pemilik:</label><select id="dashboard-owner" name="owner"><option value="">Semua Pemilik</option>@foreach($owners as $owner)<option value="{{ $owner }}" @selected($filters['owner'] === $owner)>{{ $owner }}</option>@endforeach</select></div>
         <div class="dashboard-filter"><label for="dashboard-service">Filter Layanan:</label><select id="dashboard-service" name="service"><option value="">Semua Layanan</option>@foreach($services as $service)<option value="{{ $service }}" @selected($filters['service'] === $service)>{{ $service }}</option>@endforeach</select></div>
         <div class="dashboard-filter"><label for="dashboard-sector">Filter Sektor:</label><select id="dashboard-sector" name="sector"><option value="">Semua Sektor</option>@foreach($sectors as $sector)<option value="{{ $sector }}" @selected($filters['sector'] === $sector)>{{ $sector }}</option>@endforeach</select></div>
+        <div class="dashboard-filter"><label for="dashboard-search">Cari aplikasi:</label><input id="dashboard-search" name="search" type="search" value="{{ $filters['search'] }}" placeholder="Nama, URL, pemilik..."></div>
+        <div class="dashboard-filter-submit"><button class="button" type="submit"><i class="bi bi-funnel-fill"></i> Terapkan Filter</button></div>
         <div class="dashboard-filter-reset"><a class="button" href="{{ route('dashboard', ['scope' => $scope]) }}"><i class="bi bi-x-lg"></i> Reset Filter</a></div>
     </form>
     @endauth
-    <div class="dashboard-table-tools"><strong>Menampilkan {{ $filteredApplications->count() }} data</strong><label for="dashboard-search">Cari: <input id="dashboard-search" type="search" placeholder="Cari tabel..."></label></div>
+    <div class="dashboard-table-tools"><strong>Total {{ $filteredApplications->count() }} data sesuai filter</strong></div>
     <div class="dashboard-table-wrap"><table class="dashboard-table" id="dashboard-applications-table"><thead><tr><th>No</th><th>Nama Aplikasi</th><th>URL</th><th>Pemilik Aplikasi</th><th>No Registrasi PSE</th><th>Layanan</th><th>Sektor</th><th>Bahasa</th><th>Framework</th><th>Database</th></tr></thead><tbody>
-    @forelse($filteredApplications as $application)
-        <tr><td>{{ $loop->iteration }}</td><td class="app-name">{{ $application->name }}</td><td>@if($application->url)<a href="{{ $application->url }}" target="_blank" rel="noopener">{{ $application->url }}</a>@else - @endif</td><td>{{ $application->owner ?: '-' }}</td><td>{{ $application->pse_badge ?: '-' }}</td><td>{{ $application->service ?: '-' }}</td><td>{{ $application->sector ?: '-' }}</td><td>{{ $application->language ?: '-' }}</td><td>{{ $application->framework ?: '-' }}</td><td>{{ $application->database ?: '-' }}</td></tr>
+    @forelse($paginatedApplications as $application)
+        <tr><td>{{ $paginatedApplications->firstItem() + $loop->index }}</td><td class="app-name">{{ $application->name }}</td><td>@if($application->url)<a href="{{ $application->url }}" target="_blank" rel="noopener">{{ $application->url }}</a>@else - @endif</td><td>{{ $application->owner ?: '-' }}</td><td>{{ $application->pse_badge ?: '-' }}</td><td>{{ $application->service ?: '-' }}</td><td>{{ $application->sector ?: '-' }}</td><td>{{ $application->language ?: '-' }}</td><td>{{ $application->framework ?: '-' }}</td><td>{{ $application->database ?: '-' }}</td></tr>
     @empty
         <tr><td colspan="10">Data belum tersedia.</td></tr>
     @endforelse
     </tbody></table></div>
+    <div class="pagination-bar"><div>Menampilkan {{ $paginatedApplications->firstItem() ?: 0 }} sampai {{ $paginatedApplications->lastItem() ?: 0 }} dari {{ $paginatedApplications->total() }} data</div><div class="pagination"><a class="{{ $paginatedApplications->onFirstPage() ? 'disabled' : '' }}" href="{{ $paginatedApplications->previousPageUrl() ?: '#' }}">Sebelumnya</a>@foreach($paginatedApplications->getUrlRange(max(1, $paginatedApplications->currentPage() - 2), min($paginatedApplications->lastPage(), $paginatedApplications->currentPage() + 2)) as $page => $url)<a class="{{ $page == $paginatedApplications->currentPage() ? 'current' : '' }}" href="{{ $url }}">{{ $page }}</a>@endforeach<a class="{{ $paginatedApplications->currentPage() == $paginatedApplications->lastPage() ? 'disabled' : '' }}" href="{{ $paginatedApplications->nextPageUrl() ?: '#' }}">Selanjutnya</a></div></div>
 </section>
-<script>
-document.getElementById('dashboard-search')?.addEventListener('input', function () {
-    const query = this.value.toLowerCase();
-    document.querySelectorAll('#dashboard-applications-table tbody tr').forEach(function (row) {
-        row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
-    });
-});
-</script>
 @endsection
