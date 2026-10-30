@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -113,6 +114,8 @@ class SecurityFindingController extends Controller
             'pic_email' => ['nullable', 'email', 'max:190'],
             'internal_note' => ['nullable', 'string', 'max:500'],
             'evidence.*' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,zip,txt,log', 'max:10240'],
+        ], $this->evidenceUploadMessages($request) + [
+            'evidence.*.uploaded' => 'Unggahan gagal diterima server. Coba unggah ulang atau hubungi administrator.',
         ]);
         $files = array_filter($request->file('evidence', []));
         validator(['evidence' => $files], ['evidence' => ['array', 'max:10']])->validate();
@@ -159,6 +162,10 @@ class SecurityFindingController extends Controller
             'follow_up' => ['required', 'string', 'max:10000'],
             'status' => ['required', Rule::in(['Dalam Penanganan', 'Menunggu Verifikasi', 'Selesai'])],
             'evidence.*' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,zip,txt,log', 'max:10240'],
+        ], $this->evidenceUploadMessages($request) + [
+            'evidence.*.uploaded' => 'Unggahan gagal diterima server. Coba unggah ulang atau hubungi administrator.',
+            'evidence.*.mimes' => 'Bukti perbaikan harus berformat JPG, PNG, PDF, ZIP, TXT, atau LOG.',
+            'evidence.*.max' => 'Ukuran setiap bukti perbaikan maksimal 10 MB.',
         ]);
         $files = array_filter($request->file('evidence', []));
         validator(['evidence' => $files], ['evidence' => ['array', 'max:10']])->validate();
@@ -222,6 +229,29 @@ class SecurityFindingController extends Controller
         return Pdf::loadView('security.memo', ['finding' => $finding])
             ->setPaper('a4')
             ->download('nota-dinas-'.$finding->reference_code.'.pdf');
+    }
+
+    /** @return array<string, string> */
+    private function evidenceUploadMessages(Request $request): array
+    {
+        $messages = [];
+
+        foreach ($request->file('evidence', []) as $index => $file) {
+            if (!($file instanceof UploadedFile) || $file->isValid()) {
+                continue;
+            }
+
+            $messages["evidence.{$index}.uploaded"] = match ($file->getError()) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Berkas melebihi batas maksimum upload server. Pilih foto yang lebih kecil.',
+                UPLOAD_ERR_PARTIAL => 'Unggahan terputus sebelum selesai. Coba unggah ulang.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Server tidak memiliki direktori sementara untuk menerima berkas. Hubungi administrator.',
+                UPLOAD_ERR_CANT_WRITE => 'Server gagal menyimpan berkas sementara. Hubungi administrator.',
+                UPLOAD_ERR_EXTENSION => 'Ekstensi server menolak unggahan ini. Coba simpan foto sebagai JPG atau PNG.',
+                default => 'Unggahan gagal diterima server. Coba unggah ulang atau hubungi administrator.',
+            };
+        }
+
+        return $messages;
     }
 
     /** @param array<int, \Illuminate\Http\UploadedFile> $files */
