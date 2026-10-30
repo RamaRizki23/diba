@@ -36,7 +36,10 @@ class SecurityFindingController extends Controller
             'total' => $all->count(),
             'openCount' => $all->whereIn('status', ['Baru', 'Dalam Penanganan', 'Menunggu Verifikasi'])->count(),
             'highCount' => $all->where('severity', 'High')->whereNotIn('status', ['Selesai'])->count(),
-            'actionCount' => $all->filter(fn (SecurityFinding $finding) => $finding->deadline && $finding->deadline->isPast() && $finding->status !== 'Selesai')->count(),
+            'actionCount' => (clone $findings)
+                ->whereDate('deadline', '<', today())
+                ->where('status', '!=', 'Selesai')
+                ->count(),
             'statusCounts' => $statusCounts,
             'typeCounts' => $typeCounts,
             'recent' => (clone $findings)->with('application')->latest('found_at')->take(8)->get(),

@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('evidence-list').textContent = [...this.files].map(file => `${file.name} (${Math.ceil(file.size / 1024)} KB)`).join(' · ');
     });
     application.dispatchEvent(new Event('change'));
+    document.getElementById('finding_type').dispatchEvent(new Event('change'));
+    document.getElementById('severity').dispatchEvent(new Event('change'));
     document.getElementById('found_at').dispatchEvent(new Event('change'));
 });
 </script>

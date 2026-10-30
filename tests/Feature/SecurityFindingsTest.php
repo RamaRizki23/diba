@@ -65,12 +65,15 @@ class SecurityFindingsTest extends TestCase
 
     public function test_user_can_record_follow_up_and_change_finding_status(): void
     {
+        Storage::fake('local');
         $user = User::factory()->create();
         $finding = $this->createFinding();
+        $evidence = UploadedFile::fake()->createWithContent('bukti-perbaikan.txt', 'Bukti perbaikan.');
 
         $this->actingAs($user)->post(route('security.findings.follow-up', $finding), [
             'follow_up' => 'Perbaikan telah diterapkan dan siap diperiksa.',
             'status' => 'Menunggu Verifikasi',
+            'evidence' => [$evidence],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('security_findings', [
@@ -83,6 +86,51 @@ class SecurityFindingsTest extends TestCase
             'event' => 'Tindak lanjut diperbarui',
             'to_status' => 'Menunggu Verifikasi',
         ]);
+        $this->assertDatabaseHas('security_finding_evidence', [
+            'security_finding_id' => $finding->id,
+            'original_name' => 'bukti-perbaikan.txt',
+        ]);
+        Storage::disk('local')->assertExists($finding->evidence()->firstOrFail()->path);
+    }
+
+    public function test_follow_up_shows_a_clear_error_when_evidence_upload_fails(): void
+    {
+        $finding = $this->createFinding();
+        $failedUpload = new UploadedFile(__FILE__, 'bukti.jpg', null, UPLOAD_ERR_INI_SIZE, true);
+
+        $this->actingAs(User::factory()->create())
+            ->from(route('security.findings.show', $finding))
+            ->post(route('security.findings.follow-up', $finding), [
+                'follow_up' => 'Perbaikan sudah dilakukan.',
+                'status' => 'Dalam Penanganan',
+                'evidence' => [$failedUpload],
+            ])
+            ->assertRedirect(route('security.findings.show', $finding))
+            ->assertSessionHasErrors([
+                'evidence.0' => 'Berkas melebihi batas maksimum upload server. Pilih foto yang lebih kecil.',
+            ]);
+
+        $this->assertDatabaseMissing('security_finding_evidence', [
+            'security_finding_id' => $finding->id,
+        ]);
+    }
+
+    public function test_follow_up_explains_when_an_evidence_upload_is_interrupted(): void
+    {
+        $finding = $this->createFinding();
+        $interruptedUpload = new UploadedFile(__FILE__, 'bukti.jpg', null, UPLOAD_ERR_PARTIAL, true);
+
+        $this->actingAs(User::factory()->create())
+            ->from(route('security.findings.show', $finding))
+            ->post(route('security.findings.follow-up', $finding), [
+                'follow_up' => 'Perbaikan sudah dilakukan.',
+                'status' => 'Dalam Penanganan',
+                'evidence' => [$interruptedUpload],
+            ])
+            ->assertRedirect(route('security.findings.show', $finding))
+            ->assertSessionHasErrors([
+                'evidence.0' => 'Unggahan terputus sebelum selesai. Coba unggah ulang.',
+            ]);
     }
 
     public function test_user_can_download_a_finding_memo_as_pdf(): void
@@ -93,6 +141,80 @@ class SecurityFindingsTest extends TestCase
             ->get(route('security.findings.memo', $finding))
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_user_can_filter_findings_export_csv_and_download_evidence(): void
+    {
+        Storage::fake('local');
+        $user = User::factory()->create();
+        $finding = $this->createFinding();
+        $finding->update(['title' => 'Temuan filter yang dicari']);
+        $otherFinding = $this->createFinding('SEC-TEST-02', 'TMN-TEST-000002');
+        $otherFinding->update([
+            'title' => 'Temuan lain',
+            'status' => 'Selesai',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('security.findings.index', ['status' => 'Baru', 'search' => 'filter yang dicari']))
+            ->assertOk()
+            ->assertSee($finding->reference_code)
+            ->assertDontSee($otherFinding->reference_code);
+
+        $export = $this->get(route('security.findings.export', ['status' => 'Baru', 'search' => 'filter yang dicari']));
+        $export->assertOk()->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $this->assertStringContainsString($finding->reference_code, $export->streamedContent());
+        $this->assertStringNotContainsString($otherFinding->reference_code, $export->streamedContent());
+
+        $path = 'security-evidence/'.$finding->id.'/bukti.txt';
+        Storage::disk('local')->put($path, 'Bukti pengujian.');
+        $evidence = $finding->evidence()->create([
+            'original_name' => 'bukti.txt',
+            'path' => $path,
+            'mime_type' => 'text/plain',
+            'size' => 16,
+        ]);
+
+        $this->get(route('security.findings.show', $finding))
+            ->assertOk()
+            ->assertSee('bukti.txt');
+        $this->get(route('security.findings.evidence', [$finding, $evidence]))
+            ->assertDownload('bukti.txt');
+    }
+
+    public function test_user_can_update_status_and_a_deadline_today_is_not_overdue(): void
+    {
+        $this->travelTo(now()->setTime(12, 0));
+        $user = User::factory()->create();
+        $finding = $this->createFinding();
+        $finding->update(['deadline' => today()->toDateString()]);
+
+        $this->actingAs($user)
+            ->get(route('security.findings.show', $finding))
+            ->assertOk()
+            ->assertSee('Hari ini')
+            ->assertDontSee('Terlambat');
+        $this->get(route('security.dashboard'))
+            ->assertOk()
+            ->assertViewHas('actionCount', 0);
+
+        $this->patch(route('security.findings.status', $finding), [
+            'status' => 'Selesai',
+            'note' => 'Perbaikan telah diverifikasi.',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('security_findings', [
+            'id' => $finding->id,
+            'status' => 'Selesai',
+        ]);
+        $this->assertNotNull($finding->fresh()->verified_at);
+        $this->assertDatabaseHas('security_finding_activities', [
+            'security_finding_id' => $finding->id,
+            'event' => 'Status diubah',
+            'from_status' => 'Baru',
+            'to_status' => 'Selesai',
+            'note' => 'Perbaikan telah diverifikasi.',
+        ]);
     }
 
     public function test_dashboard_filters_search_all_rows_and_keep_scope_separate(): void
@@ -129,12 +251,15 @@ class SecurityFindingsTest extends TestCase
         ]);
     }
 
-    private function createFinding(): SecurityFinding
+    private function createFinding(
+        string $applicationCode = 'SEC-TEST-01',
+        string $referenceCode = 'TMN-TEST-000001'
+    ): SecurityFinding
     {
-        $application = $this->createTestApplication();
+        $application = $this->createTestApplication($applicationCode);
 
         return SecurityFinding::query()->create([
-            'reference_code' => 'TMN-TEST-000001',
+            'reference_code' => $referenceCode,
             'application_id' => $application->id,
             'application_name' => $application->name,
             'application_url' => $application->url,
